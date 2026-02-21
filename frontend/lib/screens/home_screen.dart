@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:titanic_app/models/titanic.dart';
-import 'package:titanic_app/providers/auth_provider.dart';
 import 'package:titanic_app/providers/prediction_provider.dart';
-import 'package:titanic_app/screens/history_screen.dart';
-import 'package:titanic_app/utils/constants.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -72,64 +69,19 @@ class _HomeScreenState extends State<HomeScreen> {
     final predictionResult = predictionState.prediction;
     final errorMessage = predictionState.errorMessage;
 
-    final authState = context.watch<AuthProvider>();
-    final username = authState.user?.username ?? "Invité";
-
     final bool didSurvive =
         predictionResult != null && predictionResult.prediction >= 0.5;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
+        title: const Text("Titanic Prediction"),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-        actions: [
-          PopupMenuButton(
-            position: PopupMenuPosition.under,
-            padding: EdgeInsets.all(8),
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                onTap: () {
-                  nextPageAndBack(HistoryScreen(), context);
-                },
-                child: Row(
-                  spacing: 10,
-                  children: [
-                    Icon(Icons.history, color: Colors.blue),
-                    Text("History", style: TextStyle(color: Colors.blue)),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                onTap: () async {
-                  await Provider.of<AuthProvider>(
-                    context,
-                    listen: false,
-                  ).logout();
-                },
-                child: Row(
-                  spacing: 10,
-                  children: [
-                    Icon(Icons.logout, color: Colors.red),
-                    Text("Déconnexion", style: TextStyle(color: Colors.red)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20),
-            Row(
-              children: [
-                SizedBox(width: 20),
-                Text("Hello, $username", style: TextStyle(fontSize: 20)),
-              ],
-            ),
-            SizedBox(height: 80),
+            const SizedBox(height: 40),
             SizedBox(
               width: 300,
               child: Form(
@@ -150,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return null;
                       },
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.male),
+                        prefixIcon: const Icon(Icons.male),
                         labelText: "Sex",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -170,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return null;
                       },
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.calendar_today),
+                        prefixIcon: const Icon(Icons.calendar_today),
                         labelText: "Age",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -191,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                       decoration: InputDecoration(
                         labelText: "Fare",
-                        prefixIcon: Icon(Icons.directions_walk),
+                        prefixIcon: const Icon(Icons.directions_walk),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -210,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return null;
                       },
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.folder),
+                        prefixIcon: const Icon(Icons.folder),
                         labelText: "Classe",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -221,8 +173,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     DropdownButtonFormField<String>(
                       value: _selectedModel,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.memory),
-                        labelText: "Modèle ML",
+                        prefixIcon: const Icon(Icons.memory),
+                        labelText: "Modele ML",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -240,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return "Veuillez choisir un modèle";
+                          return "Veuillez choisir un modele";
                         }
                         return null;
                       },
@@ -252,24 +204,32 @@ class _HomeScreenState extends State<HomeScreen> {
                         return SizedBox(
                           width: 300,
                           child: ElevatedButton(
-                            onPressed: _predict,
+                            onPressed: isLoading ? null : _predict,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(vertical: 20),
+                              padding: const EdgeInsets.symmetric(vertical: 20),
                               elevation: 5,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                             ),
-
-                            child: Text(
-                              "Make Prediction",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                              ),
-                            ),
+                            child: isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    "Predire",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                    ),
+                                  ),
                           ),
                         );
                       },
@@ -301,13 +261,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Modèle utilisé
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
-                                    "Modèle utilisé",
+                                    "Modele utilise",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
@@ -316,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Chip(
                                     label: Text(
                                       _usedModel == null
-                                          ? "—"
+                                          ? "--"
                                           : _models.firstWhere(
                                               (m) => m["value"] == _usedModel,
                                             )["label"]!,
@@ -331,7 +290,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               const SizedBox(height: 16),
 
-                              // Verdict
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 12,
@@ -377,9 +335,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               const SizedBox(height: 16),
 
-                              // Probabilité
                               Text(
-                                "Probabilité estimée",
+                                "Probabilite estimee",
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade700,
