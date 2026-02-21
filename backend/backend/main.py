@@ -1,12 +1,10 @@
 from fastapi import FastAPI
-from backend.api.prediction import router as PredictRouter
-from backend.core.database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
-from backend.api import auth
+from backend.api.prediction import router as PredictRouter
 
 app = FastAPI(
-    title="Api-Prediction des survivants du bateau titanic",
-    version= "1.0.1",
+    title="API - Prediction de survie du Titanic",
+    version="1.0.0",
 )
 
 app.add_middleware(
@@ -17,8 +15,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-Base.metadata.create_all(bind=engine)
-
 app.include_router(PredictRouter, prefix="/api")
-app.include_router(auth.router)
-
