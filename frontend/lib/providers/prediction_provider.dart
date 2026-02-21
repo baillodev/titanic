@@ -16,11 +16,10 @@ class PredictionProvider extends ChangeNotifier {
 
   PredictionProvider(this._apiService);
 
-  Future<void> makePrediction (
+  Future<void> makePrediction(
     Titanic data, {
     required String modelName,
-}
-  ) async {
+  }) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -36,11 +35,12 @@ class PredictionProvider extends ChangeNotifier {
     } catch (e) {
       _errorMessage = e.toString();
       _prediction = null;
-    }finally {
+    } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
+
   void resetPrediction() {
     _prediction = null;
     _errorMessage = null;
