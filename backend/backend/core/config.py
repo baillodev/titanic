@@ -1,13 +1,10 @@
-import os
+from pathlib import Path
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
 
-class Settings:
-    MODELS = {
-        "logistic": os.path.join(BASE_DIR, "..", "models", "logistic_model.pkl"),
-        "knn": os.path.join(BASE_DIR, "..", "models", "knn_classifier.pkl"),
-        "decision_tree": os.path.join(BASE_DIR, "..", "models", "decision_tree_classifier.pkl"),
-        "random_forest": os.path.join(BASE_DIR, "..", "models", "random_forest_classifier.pkl"),
-    }
-
-settings = Settings()
+MODELS = {
+    "logistic": MODELS_DIR / "logistic_model.pkl",
+    "knn": MODELS_DIR / "knn_classifier.pkl",
+    "decision_tree": MODELS_DIR / "decision_tree_classifier.pkl",
+    "random_forest": MODELS_DIR / "random_forest_classifier.pkl",
+}
